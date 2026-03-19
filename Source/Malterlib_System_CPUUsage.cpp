@@ -38,7 +38,7 @@ namespace NMib::NSystem
 		DMibRequire(m_SampleInterval > 0.0);
 		DMibRequire(_AverageInterval >= m_SampleInterval);
 
-		mint nHistory = fg_Max((_AverageInterval / _SampleInterval).f_ToIntRound(), 1);
+		umint nHistory = fg_Max((_AverageInterval / _SampleInterval).f_ToIntRound(), 1);
 		m_History.f_SetLen(nHistory);
 
 		f_Start();
@@ -60,7 +60,7 @@ namespace NMib::NSystem
 		{
 			auto Usage = m_CPUUsage.f_GetUsage();
 
-			mint nHistory = m_History.f_GetLen();
+			umint nHistory = m_History.f_GetLen();
 			m_History[m_CurrentHistory] = Usage;
 			m_CurrentHistory = (m_CurrentHistory + 1) % nHistory;
 			if (m_nHistory < nHistory)
@@ -70,7 +70,7 @@ namespace NMib::NSystem
 			CSystemCPUUsage Min(1.0);
 			CSystemCPUUsage Max(0.0);
 
-			for (mint i = 0; i < m_nHistory; ++i)
+			for (umint i = 0; i < m_nHistory; ++i)
 			{
 				auto &This = m_History[i];
 				Min.m_Idle = fg_Min(Min.m_Idle, This.m_Idle);
