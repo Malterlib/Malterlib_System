@@ -23,7 +23,6 @@ Import "../Core/Lib_Malterlib.MTarget"
 	}
 }
 
-
 Property
 {
 	MalterlibLibrary_System: bool = MalterlibLibrary_All
@@ -41,8 +40,7 @@ Property
 Property
 {
 	!!MalterlibEnableInternalTests true
-	
+
 	MalterlibTests =+ "Malterlib_System"
 	//MalterlibTestFiles_Malterlib_System: [type(CEntity)] = ["Test/*"->MakeAbsolute()]
 }
-
