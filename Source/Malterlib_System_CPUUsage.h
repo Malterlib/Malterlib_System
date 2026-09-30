@@ -9,8 +9,8 @@ namespace NMib::NSystem
 {
 	class CCPUUsage
 	{
-
 		void *m_pHandle;
+
 	public:
 		CCPUUsage();
 		~CCPUUsage();
@@ -33,6 +33,7 @@ namespace NMib::NSystem
 		CSystemCPUUsage m_Max;
 		aint f_Main();
 		NStr::CStr f_GetThreadName();
+
 	public:
 		CCPUUsageMonitor(fp32 _SampleInterval, fp32 _AverageInterval);
 		~CCPUUsageMonitor();
