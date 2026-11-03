@@ -7,39 +7,39 @@
 namespace NMib::NSystem
 {
 	CCPUUsage::CCPUUsage()
-		: m_pHandle(nullptr)
+		: mp_pHandle(nullptr)
 	{
-		m_pHandle = NMib::NSys::fg_System_CPUUsageMonitor_Open();
+		mp_pHandle = NMib::NSys::fg_System_CPUUsageMonitor_Open();
 	}
 
 	CCPUUsage::~CCPUUsage()
 	{
-		if (m_pHandle)
+		if (mp_pHandle)
 		{
-			NMib::NSys::fg_System_CPUUsageMonitor_Close(m_pHandle);
-			m_pHandle = nullptr;
+			NMib::NSys::fg_System_CPUUsageMonitor_Close(mp_pHandle);
+			mp_pHandle = nullptr;
 		}
 	}
 
 	CSystemCPUUsage CCPUUsage::f_GetUsage(bool &_bChanged)
 	{
-		return NMib::NSys::fg_System_CPUUsageMonitor_GetUsage(m_pHandle, _bChanged);
+		return NMib::NSys::fg_System_CPUUsageMonitor_GetUsage(mp_pHandle, _bChanged);
 	}
 
 	CSystemCPUUsage CCPUUsage::f_GetUsage()
 	{
 		bool bChanged;
-		return NMib::NSys::fg_System_CPUUsageMonitor_GetUsage(m_pHandle, bChanged);
+		return NMib::NSys::fg_System_CPUUsageMonitor_GetUsage(mp_pHandle, bChanged);
 	}
 
 	CCPUUsageMonitor::CCPUUsageMonitor(fp32 _SampleInterval, fp32 _AverageInterval)
-		: m_SampleInterval(_SampleInterval)
+		: mp_SampleInterval(_SampleInterval)
 	{
-		DMibRequire(m_SampleInterval > 0.0);
-		DMibRequire(_AverageInterval >= m_SampleInterval);
+		DMibRequire(mp_SampleInterval > 0.0);
+		DMibRequire(_AverageInterval >= mp_SampleInterval);
 
 		umint nHistory = fg_Max((_AverageInterval / _SampleInterval).f_ToIntRound(), 1);
-		m_History.f_SetLen(nHistory);
+		mp_History.f_SetLen(nHistory);
 
 		f_Start();
 	}
@@ -58,21 +58,21 @@ namespace NMib::NSystem
 	{
 		while (f_GetState() != NThread::EThreadState_EventWantQuit)
 		{
-			auto Usage = m_CPUUsage.f_GetUsage();
+			auto Usage = mp_CPUUsage.f_GetUsage();
 
-			umint nHistory = m_History.f_GetLen();
-			m_History[m_CurrentHistory] = Usage;
-			m_CurrentHistory = (m_CurrentHistory + 1) % nHistory;
-			if (m_nHistory < nHistory)
-				++m_nHistory;
+			umint nHistory = mp_History.f_GetLen();
+			mp_History[mp_CurrentHistory] = Usage;
+			mp_CurrentHistory = (mp_CurrentHistory + 1) % nHistory;
+			if (mp_nHistory < nHistory)
+				++mp_nHistory;
 
 			CSystemCPUUsage Average;
 			CSystemCPUUsage Min(1.0);
 			CSystemCPUUsage Max(0.0);
 
-			for (umint i = 0; i < m_nHistory; ++i)
+			for (umint iHistory = 0; iHistory < mp_nHistory; ++iHistory)
 			{
-				auto &This = m_History[i];
+				auto &This = mp_History[iHistory];
 				Min.m_Idle = fg_Min(Min.m_Idle, This.m_Idle);
 				Min.m_User = fg_Min(Min.m_User, This.m_User);
 				Min.m_Kernel = fg_Min(Min.m_Kernel, This.m_Kernel);
@@ -86,44 +86,44 @@ namespace NMib::NSystem
 				Average.m_Kernel += This.m_Kernel;
 			}
 
-			Average.m_Idle /= fp32(m_nHistory);
-			Average.m_User /= fp32(m_nHistory);
-			Average.m_Kernel /= fp32(m_nHistory);
+			Average.m_Idle /= fp32(mp_nHistory);
+			Average.m_User /= fp32(mp_nHistory);
+			Average.m_Kernel /= fp32(mp_nHistory);
 
 			{
-				DMibLock(m_Lock);
-				m_Last = Usage;
-				m_Average = Average;
-				m_Min = Min;
-				m_Max = Max;
+				DMibLock(mp_Lock);
+				mp_Last = Usage;
+				mp_Average = Average;
+				mp_Min = Min;
+				mp_Max = Max;
 			}
 
-			m_EventWantQuit.f_WaitTimeout(m_SampleInterval);
+			m_EventWantQuit.f_WaitTimeout(mp_SampleInterval);
 		}
 		return 0;
 	}
 
 	CSystemCPUUsage CCPUUsageMonitor::f_GetLast()
 	{
-		DMibLock(m_Lock);
-		return m_Last;
+		DMibLock(mp_Lock);
+		return mp_Last;
 	}
 
 	CSystemCPUUsage CCPUUsageMonitor::f_GetAverage()
 	{
-		DMibLock(m_Lock);
-		return m_Average;
+		DMibLock(mp_Lock);
+		return mp_Average;
 	}
 
 	CSystemCPUUsage CCPUUsageMonitor::f_GetMin()
 	{
-		DMibLock(m_Lock);
-		return m_Min;
+		DMibLock(mp_Lock);
+		return mp_Min;
 	}
 
 	CSystemCPUUsage CCPUUsageMonitor::f_GetMax()
 	{
-		DMibLock(m_Lock);
-		return m_Max;
+		DMibLock(mp_Lock);
+		return mp_Max;
 	}
 }

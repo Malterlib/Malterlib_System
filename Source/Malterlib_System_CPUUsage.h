@@ -16,7 +16,7 @@ namespace NMib::NSystem
 		CSystemCPUUsage f_GetUsage();
 
 	private:
-		void *m_pHandle;
+		void *mp_pHandle;
 	};
 
 	struct CCPUUsageMonitor : protected NThread::CThread
@@ -31,16 +31,16 @@ namespace NMib::NSystem
 		CSystemCPUUsage f_GetMax();
 
 	private:
-		CCPUUsage m_CPUUsage;
-		fp32 m_SampleInterval;
-		zmint m_CurrentHistory;
-		zmint m_nHistory;
-		NContainer::TCVector<CSystemCPUUsage> m_History;
-		NThread::CMutual m_Lock;
-		CSystemCPUUsage m_Last;
-		CSystemCPUUsage m_Average;
-		CSystemCPUUsage m_Min;
-		CSystemCPUUsage m_Max;
+		CCPUUsage mp_CPUUsage;
+		fp32 mp_SampleInterval;
+		zmint mp_CurrentHistory;
+		zmint mp_nHistory;
+		NContainer::TCVector<CSystemCPUUsage> mp_History;
+		NThread::CMutual mp_Lock;
+		CSystemCPUUsage mp_Last;
+		CSystemCPUUsage mp_Average;
+		CSystemCPUUsage mp_Min;
+		CSystemCPUUsage mp_Max;
 		aint f_Main();
 		NStr::CStr f_GetThreadName();
 	};
