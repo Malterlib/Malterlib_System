@@ -7,20 +7,30 @@
 
 namespace NMib::NSystem
 {
-	class CCPUUsage
+	struct CCPUUsage
 	{
-		void *m_pHandle;
-
-	public:
 		CCPUUsage();
 		~CCPUUsage();
 
 		CSystemCPUUsage f_GetUsage(bool &_bChanged);
 		CSystemCPUUsage f_GetUsage();
+
+	private:
+		void *m_pHandle;
 	};
 
-	class CCPUUsageMonitor : protected NThread::CThread
+	struct CCPUUsageMonitor : protected NThread::CThread
 	{
+		CCPUUsageMonitor(fp32 _SampleInterval, fp32 _AverageInterval);
+		~CCPUUsageMonitor();
+
+		CSystemCPUUsage f_GetLast();
+
+		CSystemCPUUsage f_GetAverage();
+		CSystemCPUUsage f_GetMin();
+		CSystemCPUUsage f_GetMax();
+
+	private:
 		CCPUUsage m_CPUUsage;
 		fp32 m_SampleInterval;
 		zmint m_CurrentHistory;
@@ -33,15 +43,5 @@ namespace NMib::NSystem
 		CSystemCPUUsage m_Max;
 		aint f_Main();
 		NStr::CStr f_GetThreadName();
-
-	public:
-		CCPUUsageMonitor(fp32 _SampleInterval, fp32 _AverageInterval);
-		~CCPUUsageMonitor();
-
-		CSystemCPUUsage f_GetLast();
-
-		CSystemCPUUsage f_GetAverage();
-		CSystemCPUUsage f_GetMin();
-		CSystemCPUUsage f_GetMax();
 	};
 }
