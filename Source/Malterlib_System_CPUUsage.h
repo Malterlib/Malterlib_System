@@ -31,6 +31,9 @@ namespace NMib::NSystem
 		CSystemCPUUsage f_GetMax();
 
 	private:
+		aint f_Main();
+		NStr::CStr f_GetThreadName();
+
 		CCPUUsage mp_CPUUsage;
 		fp32 mp_SampleInterval;
 		zmint mp_CurrentHistory;
@@ -41,7 +44,5 @@ namespace NMib::NSystem
 		CSystemCPUUsage mp_Average;
 		CSystemCPUUsage mp_Min;
 		CSystemCPUUsage mp_Max;
-		aint f_Main();
-		NStr::CStr f_GetThreadName();
 	};
 }
